@@ -11,7 +11,7 @@ CORS(app)
 def gemini_request():
     question = request.json['request']
     pass
-    answer = gemini_ai(question)
-    return {'answer': answer}
+    # answer = gemini_ai(question)
+    return {'answer': "hegay"}
 
 app.run(host="127.0.0.1", port=int(os.environ.get('PORT', 5000)))
