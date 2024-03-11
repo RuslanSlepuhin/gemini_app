@@ -1,4 +1,5 @@
 # This a trial bot called 'checker' that uses Gemini to answer any questions
+import asyncio
 import time
 from geminitrial.views import gemini_ai
 from geminitrial.botsettings import bot
@@ -15,7 +16,7 @@ def start(message):
 def text(message):
     uid=message.chat.id
     question = message.text
-    answer = gemini_ai(question)
+    answer = asyncio.run(gemini_ai(question))
     print(message.from_user.first_name)
     bot.send_message(uid, answer)
 
