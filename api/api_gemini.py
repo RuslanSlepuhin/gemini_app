@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask import request
 from geminitrial.views import gemini_ai
@@ -9,8 +9,8 @@ CORS(app)
 
 @app.route("/gemini_request", methods=["POST"])
 async def gemini_request():
-    question = request.json['request']
-    answer = gemini_ai(question)
-    return {'answer': answer}
+    question = await request.json['request']
+    answer = await gemini_ai(question)
+    return jsonify({'answer': answer})
 
 app.run(host="127.0.0.1", port=int(os.environ.get('PORT', 5000)))
