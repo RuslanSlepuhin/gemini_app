@@ -1,7 +1,7 @@
 # This a trial bot called 'checker' that uses Gemini to answer any questions
 import time
-from views import gemini_ai
-from botsettings import bot
+from geminitrial.views import gemini_ai
+from geminitrial.botsettings import bot
 
 
 @bot.message_handler(commands=['start'])

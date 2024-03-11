@@ -1,4 +1,4 @@
-from models import model
+from geminitrial.models import model
 
 
 def gemini_ai(prompt):

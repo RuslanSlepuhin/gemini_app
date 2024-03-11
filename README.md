@@ -1,1 +1,1 @@
-# gemini_app
+# gemini endpoint
