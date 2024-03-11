@@ -9,7 +9,7 @@ CORS(app)
 
 @app.route("/gemini_request", methods=["POST"])
 async def gemini_request():
-    question = await request.json['request']
+    question = request.json['request']
     answer = await gemini_ai(question)
     return jsonify({'answer': answer})
 
