@@ -10,7 +10,7 @@ CORS(app)
 @app.route("/gemini_request", methods=["POST"])
 def gemini_request():
     question = request.json['request']
-    print(question)
+    print(question, type(question))
     # answer = gemini_ai(question)
     return {'answer': "hegay"}
 
