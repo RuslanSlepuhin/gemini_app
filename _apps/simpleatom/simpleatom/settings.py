@@ -30,6 +30,7 @@ DEBUG = True
 #     'simpleatom.io',
 #     'www.simpleatom.io',
 #     '127.0.0.1',
+#     '194.163.44.157',
 # ]
 
 ALLOWED_HOSTS = ['*']
@@ -40,6 +41,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://simpleatom.io",
     "https://simpleatom.io",
+    "http://194.163.44.157",
 ]
 
 
