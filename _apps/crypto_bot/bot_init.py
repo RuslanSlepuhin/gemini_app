@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 from telethon import TelegramClient
-from crypto_bot import variables as var
+from _apps.crypto_bot import variables as var
 from aiogram import Bot, Dispatcher, types, Router
 from aiogram.fsm.storage.memory import MemoryStorage
 

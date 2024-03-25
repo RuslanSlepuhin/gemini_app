@@ -7,7 +7,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import FSInputFile, InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from crypto_bot import variables
+from _apps.crypto_bot import variables
 
 class CryptoBotMethods:
     def __init__(self, Crypto_Bot):
