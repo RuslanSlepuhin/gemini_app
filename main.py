@@ -29,7 +29,7 @@ if __name__ == "__main__":
     p1 = Process(target=gemini_bot, args=())
     p2 = Process(target=gemini_api, args=())
     p3 = Process(target=simpleatom_start, args=())
-    p4 = Process(target=simpleatom_start, args=())
+    p4 = Process(target=crypto_bot, args=())
 
     p1.start()
     p2.start()
