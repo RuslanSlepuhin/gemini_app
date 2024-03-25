@@ -1,4 +1,4 @@
-config_path = "./_apps./crypto_bot/settings/config.ini"
+config_path = "./_apps/crypto_bot/settings/config.ini"
 invite_link = "https://t.me/+vzPuOZD8spFhZWUy"
 media_path = "./_apps./crypto_bot/media/"
 
