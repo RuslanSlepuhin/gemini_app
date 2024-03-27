@@ -21,6 +21,7 @@ class CryptoBotMethods:
             await self.public_content(content)
 
     async def public_content(self, content):
+        print('*'*100)
         markup = None
         for key in content:
             match key:
