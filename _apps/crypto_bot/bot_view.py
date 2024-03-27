@@ -23,7 +23,6 @@ class CryptoBotMethods:
     async def public_content(self, content):
         markup = None
         for key in content:
-            print('/' * 100)
             match key:
                 case "video_notes":
                     for note in content[key]:
