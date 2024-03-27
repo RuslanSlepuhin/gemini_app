@@ -1,5 +1,9 @@
+crypto_channel_id = -1002072165211
+you_are_subscribed = "You are already subscribed to our channel"
+db_path = "./_apps/crypto_bot/db/crypto_users.sqlite3"
+
 config_path = "./_apps/crypto_bot/settings/config.ini"
-invite_link = "https://t.me/+TMXg5bN14nQ3MTQx"
+invite_link = "https://t.me/+vzPuOZD8spFhZWUy"
 media_path = "./_apps/crypto_bot/media/"
 
 text_step1 = f"To get an access to my profitable ROBOT you should subscribe to my FREE Telegram channel {invite_link}\n\nJust click on the button below ⬇️⬇️⬇️"
@@ -70,3 +74,15 @@ media_way = {
         'timer': 0
     }
 }
+
+user_table_name = 'users'
+user_table_create = f"CREATE TABLE IF NOT EXISTS {user_table_name} (" \
+                    f"id INTEGER PRIMARY KEY AUTOINCREMENT, " \
+                    f"telegram_id INT NOT NULL UNIQUE, " \
+                    f"username VARCHAR(100), " \
+                    f"first_name VARCHAR(100), " \
+                    f"last_name VARCHAR(100), " \
+                    f"is_bot BOLL, " \
+                    f"language_code VARCHAR(10), " \
+                    f"is_premium BOOL, " \
+                    f"follower_crypto_ch BOOL);"

@@ -5,3 +5,4 @@ __pycache__
 successguide.txt
 info.txt
 /_apps/crypto_bot/settings/config.ini
+/_apps/crypto_bot/db/crypto_users.sqlite3

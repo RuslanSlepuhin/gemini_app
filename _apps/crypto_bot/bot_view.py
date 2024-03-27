@@ -1,6 +1,6 @@
 import asyncio
 from typing import Any
-
+from _apps.crypto_bot.db.db_methods import create_table_users, insert_db
 from aiogram import types, Router, F
 from aiogram.dispatcher import router
 from aiogram.filters import CommandStart
@@ -14,11 +14,29 @@ class CryptoBotMethods:
         self.Crypto_Bot = Crypto_Bot
         self.min_per_hour = 2
 
+    async def is_subscribed(self) -> bool:
+        try:
+            chat_member = await self.Crypto_Bot.bot.get_chat_member(
+                chat_id=variables.crypto_channel_id,
+                user_id=self.Crypto_Bot.message.chat.id
+            )
+            if chat_member.status in ["member", "creator"]:
+                return True
+            else:
+                return False
+        except:
+            return False
+
     async def take_dialog(self):
         await self.Crypto_Bot.bot.send_message(self.Crypto_Bot.message.chat.id, 'TEST')
         for step in range(1, len(variables.media_way)+1):
-            content = variables.media_way[step]
-            await self.public_content(content)
+            if not await self.is_subscribed():
+                content = variables.media_way[step]
+                await self.public_content(content)
+            else:
+                await self.Crypto_Bot.bot.send_message(self.Crypto_Bot.message.chat.id, variables.you_are_subscribed)
+                print('break')
+                break
 
     async def public_content(self, content):
         markup = None
@@ -71,6 +89,21 @@ class CryptoBotMethods:
         inline_keyboard = [[button] for button in markup.buttons]
         return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
+    async def get_user_data(self):
+        data = {}
+        data['telegram_id'] = self.Crypto_Bot.message.chat.id
+        if self.Crypto_Bot.message.from_user.username:
+            data['username'] = self.Crypto_Bot.message.from_user.username
+        if self.Crypto_Bot.message.from_user.first_name:
+            data['first_name'] = self.Crypto_Bot.message.from_user.first_name
+        if self.Crypto_Bot.message.from_user.last_name:
+            data['last_name'] = self.Crypto_Bot.message.from_user.last_name
+        data['is_bot'] = self.Crypto_Bot.message.from_user.is_bot if self.Crypto_Bot.message.from_user.is_bot else False
+        data['language_code'] = self.Crypto_Bot.message.from_user.language_code
+        data['is_premium'] = self.Crypto_Bot.message.from_user.is_premium if self.Crypto_Bot.message.from_user.is_premium else False
+        data['follower_crypto_ch'] = False
+        return data
+
 
 class CryptoBot:
     def __init__(self, bot, dp):
@@ -85,13 +118,16 @@ class CryptoBot:
         @self.dp.message(CommandStart())
         async def start(message: types.Message):
             self.message = message
+            create_table_users()
+            data = await self.bot_methods.get_user_data()
+            print("user has been written") if insert_db(data) else print("user has NOT been written")
             await self.bot_methods.take_dialog()
 
         @self.dp.callback_query()
         async def callbacks(callback: types.CallbackQuery):
             pass
 
-        @self.router.message(F.NEW_CHAT_MEMBERS)
+        @self.dp.message(F.NEW_CHAT_MEMBERS)
         async def handle_new_chat_members(message: types.Message):
             pass
         # Здесь можно добавить логику обработки запросов на вступление
