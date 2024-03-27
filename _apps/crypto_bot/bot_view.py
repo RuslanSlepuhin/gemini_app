@@ -21,14 +21,12 @@ class CryptoBotMethods:
             await self.public_content(content)
 
     async def public_content(self, content):
-        print('*'*100)
         markup = None
         for key in content:
             print('/' * 100)
             match key:
                 case "video_notes":
                     for note in content[key]:
-                        print('note'*100, note)
                         file = FSInputFile(note)
                         await self.Crypto_Bot.bot.send_video_note(self.Crypto_Bot.message.chat.id, video_note=file)
                 case "videos":
