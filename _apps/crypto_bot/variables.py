@@ -1,6 +1,6 @@
 config_path = "./_apps/crypto_bot/settings/config.ini"
 invite_link = "https://t.me/+TMXg5bN14nQ3MTQx"
-media_path = "./_apps./crypto_bot/media/"
+media_path = "./_apps/crypto_bot/media/"
 
 text_step1 = f"To get an access to my profitable ROBOT you should subscribe to my FREE Telegram channel {invite_link}\n\nJust click on the button below ⬇️⬇️⬇️"
 text_step2 = f"💵 MY INCOME FOR THE WEEK 💵\n\n➡️ " \
