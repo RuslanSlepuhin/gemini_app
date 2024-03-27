@@ -1,7 +1,7 @@
 import asyncio
 from typing import Any
 
-from aiogram import types, Router
+from aiogram import types, Router, F
 from aiogram.dispatcher import router
 from aiogram.filters import CommandStart
 from aiogram.types import FSInputFile, InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest
@@ -91,11 +91,13 @@ class CryptoBot:
         async def callbacks(callback: types.CallbackQuery):
             pass
 
-        @self.router.chat_join_request()
-        async def chat_join_request_handler(chat_join_request: types.ChatJoinRequest) -> Any:
-            """
-            Catch join requests
-            """
+        @self.router.message(F.NEW_CHAT_MEMBERS)
+        async def handle_new_chat_members(message: types.Message):
             pass
+        # Здесь можно добавить логику обработки запросов на вступление
+        # Например, подтвердить запрос:
+        # await bot.approve_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
+        # Или отклонить запрос:
+        # await bot.decline_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
 
         await self.dp.start_polling(self.bot)
