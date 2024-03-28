@@ -6,7 +6,6 @@ from aiogram.dispatcher import router
 from aiogram.filters import CommandStart
 from aiogram.types import FSInputFile, InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-
 from _apps.crypto_bot import variables
 
 class CryptoBotMethods:
@@ -104,8 +103,7 @@ class CryptoBotMethods:
         data['follower_crypto_ch'] = False
         return data
 
-
-class CryptoBot:
+class CryptoBotVer3:
     def __init__(self, bot, dp):
         self.bot = bot
         self.dp = dp
@@ -130,10 +128,39 @@ class CryptoBot:
         @self.dp.message(F.NEW_CHAT_MEMBERS)
         async def handle_new_chat_members(message: types.Message):
             pass
+        # await bot.approve_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
+        # await bot.decline_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
+
+        await self.dp.start_polling(self.bot)
+
+class CryptoBotVer2:
+    def __init__(self, bot, dp):
+        self.bot = bot
+        self.dp = dp
+        self.bot_methods = CryptoBotMethods(self)
+        self.step = 1
+        self.router = Router(name=__name__)
+        print("https://t.me/crypto_simple_bot")
+
+    async def handlers(self):
+        @self.dp.message_handlers(content_types=['start'])
+        async def start(message: types.Message):
+            self.message = message
+            create_table_users()
+            data = await self.bot_methods.get_user_data()
+            print("user has been written") if insert_db(data) else print("user has NOT been written")
+            await self.bot_methods.take_dialog()
+
+        @self.dp.callback_query()
+        async def callbacks(callback: types.CallbackQuery):
+            pass
+
+        @self.dp.message_handlers(content_types=types.ContentType.NEW_CHAT_MEMBERS)
+        async def handle_new_chat_members(message: types.Message):
+            pass
         # Здесь можно добавить логику обработки запросов на вступление
         # Например, подтвердить запрос:
         # await bot.approve_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
         # Или отклонить запрос:
         # await bot.decline_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
 
-        await self.dp.start_polling(self.bot)
