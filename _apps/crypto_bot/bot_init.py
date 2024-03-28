@@ -31,6 +31,6 @@ def start_private_bot():
 if __name__ == "__main__":
     # start_private_bot()
     bot, dp = start_crypto_bot()
-    from crypto_bot.bot_view import CryptoBot
-    cp = CryptoBot([bot, dp])
+    from _apps.crypto_bot.bot_view import CryptoBotVer3
+    cp = CryptoBotVer3(bot, dp)
     cp.handlers()
