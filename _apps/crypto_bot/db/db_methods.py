@@ -14,6 +14,10 @@ def execute_query(query, fetchall:bool=False) -> bool:
         cur = con.cursor()
         try:
             cur.execute(query)
+            # if fetchall:
+            #     return cur.fetchall()
+            # else:
+            #     return True
             return cur.fetchall() if fetchall else True
         except Exception as ex:
             print("EXECUTE_QUERY: ", ex)
