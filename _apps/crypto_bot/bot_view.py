@@ -169,7 +169,7 @@ class CryptoBotVer3:
 
         @self.dp.message(Command("description"))
         async def description(message: types.Message):
-            self.bot.send_message(message.chat.id, owner_help)
+            await self.bot.send_message(message.chat.id, owner_help)
 
         @self.dp.message(CommandStart())
         async def start(message: types.Message):
