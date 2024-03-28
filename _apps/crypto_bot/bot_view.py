@@ -10,6 +10,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from _apps.crypto_bot import variables
 import pandas as pd
 from _apps.excel_report import excel_compose
+from _apps.crypto_bot.help_command import owner_help
 
 class CryptoBotMethods:
     def __init__(self, Crypto_Bot):
@@ -150,6 +151,10 @@ class CryptoBotVer3:
                 command="users",
                 description="add bot, usage '/users'",
             ),
+            BotCommand(
+                command="description",
+                description="add bot, usage '/description'",
+            ),
         ]
         await self.bot.set_my_commands(commands=commands, scope=BotCommandScopeDefault())
 
@@ -161,6 +166,10 @@ class CryptoBotVer3:
         async def users(message: types.Message):
             await self.bot_methods.update_message(message)
             await self.bot_methods.prepare_users_report()
+
+        @self.dp.message(Command("description"))
+        async def description(message: types.Message):
+            self.bot.send_message(message.chat.id, owner_help)
 
         @self.dp.message(CommandStart())
         async def start(message: types.Message):
