@@ -119,17 +119,9 @@ class CryptoBotMethods:
     async def update_join_status(self, request):
         print("user has been updated") if update_db(data={'follower_crypto_ch': True}, table=variables.user_table_name, telegram_id=request.from_user.id) else print('user has been NOT updated')
 
-
     async def send_file(self, message, file_path, caption=variables.caption_send_file):
         file = FSInputFile(path=file_path)
         await self.Crypto_Bot.bot.send_document(message.chat.id, file, caption=caption)
-
-            # with open(file_path, 'rb') as file:
-            #     try:
-            #         await self.Crypto_Bot.bot.send_document(message.chat.id, file, caption=caption)
-            #     except Exception as ex:
-            #         await self.Crypto_Bot.bot.send_message(message.chat.id, ex)
-        pass
 
     async def prepare_users_report(self):
         data = select_from(table=variables.user_table_name)
@@ -173,7 +165,11 @@ class CryptoBotVer3:
         @self.dp.message(CommandStart())
         async def start(message: types.Message):
             await self.bot_methods.update_message(message)
-            utm = message.text.split(' ')[1] if message.text else None
+            utm = '-'
+            try:
+                utm = message.text.split(' ')[1] if message.text else None
+            except Exception as ex:
+                print("UTM: ", ex)
             create_table_users()
             data = await self.bot_methods.get_user_data(utm=utm)
             print("user has been written") if insert_db(data) else print("user has NOT been written")
