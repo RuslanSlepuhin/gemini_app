@@ -6,3 +6,7 @@ successguide.txt
 info.txt
 /_apps/crypto_bot/settings/config.ini
 /_apps/crypto_bot/db/crypto_users.sqlite3
+/_apps/real_estate_bot/settings/config.ini
+/real_estate.session
+/tasks.txt
+/test_code.py
