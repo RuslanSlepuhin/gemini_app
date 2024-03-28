@@ -98,7 +98,7 @@ class CryptoBotMethods:
         data['is_bot'] = self.Crypto_Bot.message.from_user.is_bot if self.Crypto_Bot.message.from_user.is_bot else False
         data['language_code'] = self.Crypto_Bot.message.from_user.language_code
         data['is_premium'] = self.Crypto_Bot.message.from_user.is_premium if self.Crypto_Bot.message.from_user.is_premium else False
-        data['follower_crypto_ch'] = False
+        data['follower_crypto_ch'] = True if await self.is_subscribed() else False
         if kwargs:
             for key in kwargs:
                 if key in variables.fields_user_table:
