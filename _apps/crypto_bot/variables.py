@@ -3,8 +3,11 @@ you_are_subscribed = "You are already subscribed to our channel"
 db_path = "./_apps/crypto_bot/db/crypto_users.sqlite3"
 
 config_path = "./_apps/crypto_bot/settings/config.ini"
-invite_link = "https://t.me/+vzPuOZD8spFhZWUy"
+invite_link = "https://t.me/+ZXRWq4EF6pQxMDMy"
 media_path = "./_apps/crypto_bot/media/"
+time_for_accept_join = 15
+join_message = "Congratulations🎉\nYou got an access to my\nFREE FOREX TG COMMUNITY🔥\n\n✅ To get an access to my profitable ROBOT\n" \
+               "just text me right now 👉https://t.me/Message_Amy \"ROBOT\""
 
 text_step1 = f"To get an access to my profitable ROBOT you should subscribe to my FREE Telegram channel {invite_link}\n\nJust click on the button below ⬇️⬇️⬇️"
 text_step2 = f"💵 MY INCOME FOR THE WEEK 💵\n\n➡️ " \
@@ -85,4 +88,10 @@ user_table_create = f"CREATE TABLE IF NOT EXISTS {user_table_name} (" \
                     f"is_bot BOLL, " \
                     f"language_code VARCHAR(10), " \
                     f"is_premium BOOL, " \
+                    f"utm VARCHAR(50), " \
                     f"follower_crypto_ch BOOL);"
+
+fields_user_table = ["id", "telegram_id", "username", "first_name", "last_name", "is_bot", "language_code", "is_premium", "utm", "follower_crypto_ch"]
+get_users_from_db_query = f"SELECT * FROM {user_table_name}"
+caption_send_file = "Report"
+sending_report_file_name = "./_apps/crypto_bot/reports/report.xlsx"

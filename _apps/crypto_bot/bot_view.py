@@ -1,12 +1,15 @@
 import asyncio
 from typing import Any
-from _apps.crypto_bot.db.db_methods import create_table_users, insert_db
-from aiogram import types, Router, F
+from _apps.crypto_bot.db.db_methods import create_table_users, insert_db, update_db, select_from
+from aiogram import types, Router, F, Bot
 from aiogram.dispatcher import router
-from aiogram.filters import CommandStart
-from aiogram.types import FSInputFile, InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest
+from aiogram.filters import CommandStart, Command
+from aiogram.types import FSInputFile, InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest, BotCommand, \
+    BotCommandScopeDefault
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from _apps.crypto_bot import variables
+import pandas as pd
+from _apps.excel_report import excel_compose
 
 class CryptoBotMethods:
     def __init__(self, Crypto_Bot):
@@ -27,13 +30,13 @@ class CryptoBotMethods:
             return False
 
     async def take_dialog(self):
-        await self.Crypto_Bot.bot.send_message(self.Crypto_Bot.message.chat.id, 'TEST')
         for step in range(1, len(variables.media_way)+1):
             if not await self.is_subscribed():
                 content = variables.media_way[step]
                 await self.public_content(content)
             else:
-                await self.Crypto_Bot.bot.send_message(self.Crypto_Bot.message.chat.id, variables.you_are_subscribed)
+                if step == 1:
+                    await self.Crypto_Bot.bot.send_message(self.Crypto_Bot.message.chat.id, variables.you_are_subscribed)
                 print('break')
                 break
 
@@ -76,11 +79,6 @@ class CryptoBotMethods:
                         print('sleep content[timer]', content['timer'])
                         await asyncio.sleep(content['timer'] * self.min_per_hour)
 
-        # if content.get('timer') and content['timer']:
-        #     print('sleep content[timer]', content['timer'])
-        #     await asyncio.sleep(content['timer']*self.min_per_hour)
-
-
     async def get_markdown(self, button_text, callback_url):
         markup = InlineKeyboardBuilder()
         button = InlineKeyboardButton(text=button_text, url=callback_url)
@@ -88,7 +86,7 @@ class CryptoBotMethods:
         inline_keyboard = [[button] for button in markup.buttons]
         return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
-    async def get_user_data(self):
+    async def get_user_data(self, **kwargs):
         data = {}
         data['telegram_id'] = self.Crypto_Bot.message.chat.id
         if self.Crypto_Bot.message.from_user.username:
@@ -101,7 +99,48 @@ class CryptoBotMethods:
         data['language_code'] = self.Crypto_Bot.message.from_user.language_code
         data['is_premium'] = self.Crypto_Bot.message.from_user.is_premium if self.Crypto_Bot.message.from_user.is_premium else False
         data['follower_crypto_ch'] = False
+        if kwargs:
+            for key in kwargs:
+                if key in variables.fields_user_table:
+                    data[key] = kwargs[key]
+                else:
+                    print(f"key {key} is invalid")
         return data
+
+    async def accept_join_request(self, request):
+        print(f"Join request, waiting {variables.time_for_accept_join}")
+        await asyncio.sleep(variables.time_for_accept_join)
+
+        if await self.Crypto_Bot.bot.approve_chat_join_request(user_id=request.from_user.id, chat_id=request.chat.id):
+            await self.Crypto_Bot.bot.send_message(request.from_user.id, variables.join_message)
+            return True
+        return False
+
+    async def update_join_status(self, request):
+        print("user has been updated") if update_db(data={'follower_crypto_ch': True}, table=variables.user_table_name, telegram_id=request.from_user.id) else print('user has been NOT updated')
+
+
+    async def send_file(self, message, file_path, caption=variables.caption_send_file):
+        file = FSInputFile(path=file_path)
+        await self.Crypto_Bot.bot.send_document(message.chat.id, file, caption=caption)
+
+            # with open(file_path, 'rb') as file:
+            #     try:
+            #         await self.Crypto_Bot.bot.send_document(message.chat.id, file, caption=caption)
+            #     except Exception as ex:
+            #         await self.Crypto_Bot.bot.send_message(message.chat.id, ex)
+        pass
+
+    async def prepare_users_report(self):
+        data = select_from(table=variables.user_table_name)
+        report_excel_dict = await excel_compose.excel_compose_dict(data, fields=variables.fields_user_table)
+        file_path = await excel_compose.write_to_excel(report_excel_dict, variables.sending_report_file_name)
+        await self.send_file(self.Crypto_Bot.message, file_path)
+        pass
+
+    async def update_message(self, message):
+        if not self.Crypto_Bot.message:
+            self.Crypto_Bot.message = message
 
 class CryptoBotVer3:
     def __init__(self, bot, dp):
@@ -110,14 +149,33 @@ class CryptoBotVer3:
         self.bot_methods = CryptoBotMethods(self)
         self.step = 1
         self.router = Router(name=__name__)
+        self.message = None
         print("https://t.me/crypto_simple_bot")
 
+    async def set_commands(self):
+        commands = [
+            BotCommand(
+                command="users",
+                description="add bot, usage '/users'",
+            ),
+        ]
+        await self.bot.set_my_commands(commands=commands, scope=BotCommandScopeDefault())
+
     async def handlers(self):
+
+        await self.set_commands()
+
+        @self.dp.message(Command("users"))
+        async def users(message: types.Message):
+            await self.bot_methods.update_message(message)
+            await self.bot_methods.prepare_users_report()
+
         @self.dp.message(CommandStart())
         async def start(message: types.Message):
-            self.message = message
+            await self.bot_methods.update_message(message)
+            utm = message.text.split(' ')[1] if message.text else None
             create_table_users()
-            data = await self.bot_methods.get_user_data()
+            data = await self.bot_methods.get_user_data(utm=utm)
             print("user has been written") if insert_db(data) else print("user has NOT been written")
             await self.bot_methods.take_dialog()
 
@@ -125,42 +183,9 @@ class CryptoBotVer3:
         async def callbacks(callback: types.CallbackQuery):
             pass
 
-        @self.dp.message(F.NEW_CHAT_MEMBERS)
-        async def handle_new_chat_members(message: types.Message):
-            pass
-        # await bot.approve_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
-        # await bot.decline_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
+        @self.dp.chat_join_request()
+        async def chat_join_request_handler(request: ChatJoinRequest) -> Any:
+            if await self.bot_methods.accept_join_request(request):
+                await self.bot_methods.update_join_status(request)
 
         await self.dp.start_polling(self.bot)
-
-class CryptoBotVer2:
-    def __init__(self, bot, dp):
-        self.bot = bot
-        self.dp = dp
-        self.bot_methods = CryptoBotMethods(self)
-        self.step = 1
-        self.router = Router(name=__name__)
-        print("https://t.me/crypto_simple_bot")
-
-    async def handlers(self):
-        @self.dp.message_handlers(content_types=['start'])
-        async def start(message: types.Message):
-            self.message = message
-            create_table_users()
-            data = await self.bot_methods.get_user_data()
-            print("user has been written") if insert_db(data) else print("user has NOT been written")
-            await self.bot_methods.take_dialog()
-
-        @self.dp.callback_query()
-        async def callbacks(callback: types.CallbackQuery):
-            pass
-
-        @self.dp.message_handlers(content_types=types.ContentType.NEW_CHAT_MEMBERS)
-        async def handle_new_chat_members(message: types.Message):
-            pass
-        # Здесь можно добавить логику обработки запросов на вступление
-        # Например, подтвердить запрос:
-        # await bot.approve_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
-        # Или отклонить запрос:
-        # await bot.decline_chat_join_request(chat_id=message.chat.id, user_id=message.from_user.id)
-
