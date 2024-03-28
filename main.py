@@ -20,8 +20,8 @@ def simpleatom_start():
 
 def crypto_bot():
     bot, dp = bot_init.start_crypto_bot()
-    from _apps.crypto_bot.bot_view import CryptoBot
-    cp = CryptoBot(bot, dp)
+    from _apps.crypto_bot.bot_view import CryptoBotVer3
+    cp = CryptoBotVer3(bot, dp)
     asyncio.run(cp.handlers())
 
 
