@@ -77,3 +77,7 @@ def get_dict(responses, fields):
         responses_list.append(response_dict)
     return responses_list
 
+def check_table_exists(table_name=user_table_name):
+    query = """SELECT name FROM sqlite_master WHERE type='table' AND name='users';"""
+    response = execute_query(query, fetchall=True)
+    return False if not response else True
