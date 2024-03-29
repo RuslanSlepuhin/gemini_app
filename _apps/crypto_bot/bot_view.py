@@ -1,14 +1,12 @@
 import asyncio
 from typing import Any
-from _apps.crypto_bot.db.db_methods import create_table_users, insert_db, update_db, select_from
-from aiogram import types, Router, F, Bot
-from aiogram.dispatcher import router
+from _apps.crypto_bot.db.db_methods import create_table_users, insert_db, update_db, select_from, check_table_exists
+from aiogram import types, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import FSInputFile, InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest, BotCommand, \
     BotCommandScopeDefault
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from _apps.crypto_bot import variables
-import pandas as pd
 from _apps.excel_report import excel_compose
 from _apps.crypto_bot.help_command import owner_help
 
@@ -17,17 +15,22 @@ class CryptoBotMethods:
         self.Crypto_Bot = Crypto_Bot
         self.min_per_hour = 2
 
-    async def is_subscribed(self) -> bool:
+    async def is_subscribed(self, chat_id=variables.crypto_channel_id, **kwargs) -> bool:
+        if kwargs.get('user_id') and kwargs['user_id']:
+            user_id = kwargs['user_id']
+        else:
+            user_id = self.Crypto_Bot.message.chat.id
         try:
             chat_member = await self.Crypto_Bot.bot.get_chat_member(
-                chat_id=variables.crypto_channel_id,
-                user_id=self.Crypto_Bot.message.chat.id
+                chat_id=chat_id,
+                user_id=user_id
             )
             if chat_member.status in ["member", "creator"]:
                 return True
             else:
                 return False
-        except:
+        except Exception as ex:
+            print("IS SUBSCRIBER: ", ex)
             return False
 
     async def take_dialog(self):
@@ -36,7 +39,7 @@ class CryptoBotMethods:
                 content = variables.media_way[step]
                 await self.public_content(content)
             else:
-                if step == 1:
+                if step < 2:
                     await self.Crypto_Bot.bot.send_message(self.Crypto_Bot.message.chat.id, variables.you_are_subscribed)
                 print('break')
                 break
@@ -88,18 +91,19 @@ class CryptoBotMethods:
         return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
     async def get_user_data(self, **kwargs):
+        from_user = kwargs['from_user'] if kwargs.get('from_user') and kwargs['from_user'] else self.Crypto_Bot.message.from_user
         data = {}
-        data['telegram_id'] = self.Crypto_Bot.message.chat.id
-        if self.Crypto_Bot.message.from_user.username:
-            data['username'] = self.Crypto_Bot.message.from_user.username
-        if self.Crypto_Bot.message.from_user.first_name:
-            data['first_name'] = self.Crypto_Bot.message.from_user.first_name
-        if self.Crypto_Bot.message.from_user.last_name:
-            data['last_name'] = self.Crypto_Bot.message.from_user.last_name
-        data['is_bot'] = self.Crypto_Bot.message.from_user.is_bot if self.Crypto_Bot.message.from_user.is_bot else False
-        data['language_code'] = self.Crypto_Bot.message.from_user.language_code
-        data['is_premium'] = self.Crypto_Bot.message.from_user.is_premium if self.Crypto_Bot.message.from_user.is_premium else False
-        data['follower_crypto_ch'] = True if await self.is_subscribed() else False
+        data['telegram_id'] = from_user.id
+        if from_user.username:
+            data['username'] = from_user.username
+        if from_user.first_name:
+            data['first_name'] = from_user.first_name
+        if from_user.last_name:
+            data['last_name'] = from_user.last_name
+        data['is_bot'] = from_user.is_bot if from_user.is_bot else False
+        data['language_code'] = from_user.language_code
+        data['is_premium'] = from_user.is_premium if from_user.is_premium else False
+        data['follower_crypto_ch'] = True if await self.is_subscribed(user_id=from_user.id) else False
         if kwargs:
             for key in kwargs:
                 if key in variables.fields_user_table:
@@ -117,23 +121,54 @@ class CryptoBotMethods:
             return True
         return False
 
-    async def update_join_status(self, request):
+    async def update_join_status(self, request) -> Any:
         print("user has been updated") if update_db(data={'follower_crypto_ch': True}, table=variables.user_table_name, telegram_id=request.from_user.id) else print('user has been NOT updated')
 
-    async def send_file(self, message, file_path, caption=variables.caption_send_file):
-        file = FSInputFile(path=file_path)
-        await self.Crypto_Bot.bot.send_document(message.chat.id, file, caption=caption)
+    async def update_data(self, data, telegram_id) -> bool:
+        try:
+            update_db(data=data, table=variables.user_table_name, telegram_id=telegram_id)
+            return True
+        except Exception as ex:
+            print("update_join_status: ", ex)
+            return False
 
-    async def prepare_users_report(self):
+    async def send_file(self, file_path, caption=variables.caption_send_file):
+        file = FSInputFile(path=file_path)
+        await self.Crypto_Bot.bot.send_document(self.Crypto_Bot.message.chat.id, file, caption=caption)
+
+    async def prepare_users_report(self) -> None:
         data = select_from(table=variables.user_table_name)
         report_excel_dict = await excel_compose.excel_compose_dict(data, fields=variables.fields_user_table)
         file_path = await excel_compose.write_to_excel(report_excel_dict, variables.sending_report_file_name)
-        await self.send_file(self.Crypto_Bot.message, file_path)
-        pass
+        await self.send_file(file_path)
 
-    async def update_message(self, message):
+    async def update_message(self, message) -> None:
         if not self.Crypto_Bot.message:
             self.Crypto_Bot.message = message
+
+    async def insert(self, **kwargs):
+        data = await self.get_user_data(**kwargs)
+        if insert_db(data):
+            print("user has been written")
+            return True
+        else:
+            print("user has NOT been written")
+            return False
+
+    async def chat_join_request(self, request):
+        if not check_table_exists():
+            create_table_users()
+        await self.insert(from_user=request.from_user)
+        if request.invite_link.name:
+            print(request.invite_link.name)
+            try:
+                await self.update_data(data={'utm_chat': request.invite_link.name}, telegram_id=request.from_user.id)
+            except Exception as ex:
+                print(ex)
+        if not await self.is_subscribed(user_id=request.user_chat_id):
+            if await self.accept_join_request(request):
+                await self.update_join_status(request)
+
 
 class CryptoBotVer3:
     def __init__(self, bot, dp):
@@ -143,6 +178,7 @@ class CryptoBotVer3:
         self.step = 1
         self.router = Router(name=__name__)
         self.message = None
+        self.join_success = False
         print("https://t.me/crypto_simple_bot")
 
     async def set_commands(self):
@@ -174,23 +210,22 @@ class CryptoBotVer3:
         @self.dp.message(CommandStart())
         async def start(message: types.Message):
             await self.bot_methods.update_message(message)
-            utm = '-'
+            utm_bot = "-"
             try:
-                utm = message.text.split(' ')[1] if message.text else None
+                utm_bot = message.text.split(' ')[1] if message.text else None
             except Exception as ex:
-                print("UTM: ", ex)
+                print("utm_bot: ", ex)
             create_table_users()
-            data = await self.bot_methods.get_user_data(utm=utm)
+            data = await self.bot_methods.get_user_data(utm_bot=utm_bot)
             print("user has been written") if insert_db(data) else print("user has NOT been written")
             await self.bot_methods.take_dialog()
+
+        @self.dp.chat_join_request()
+        async def chat_join_request_handler(request: ChatJoinRequest) -> Any:
+            await self.bot_methods.chat_join_request(request)
 
         @self.dp.callback_query()
         async def callbacks(callback: types.CallbackQuery):
             pass
-
-        @self.dp.chat_join_request()
-        async def chat_join_request_handler(request: ChatJoinRequest) -> Any:
-            if await self.bot_methods.accept_join_request(request):
-                await self.bot_methods.update_join_status(request)
 
         await self.dp.start_polling(self.bot)
