@@ -21,7 +21,7 @@ class CryptoBotMethods:
             user_id = kwargs['user_id']
         else:
             return False
-        print('\nUSER ID: ', user_id, '\n')
+        print('\nIS_SUBSCRIBER: ', user_id, '\n')
 
         try:
             chat_member = await self.Crypto_Bot.bot.get_chat_member(
@@ -49,6 +49,7 @@ class CryptoBotMethods:
 
     async def public_content(self, message, content):
         markup = None
+        print("CONTENT GO TO ", message.from_user.id)
         for key in content:
             match key:
                 case "video_notes":
@@ -148,10 +149,6 @@ class CryptoBotMethods:
         file_path = await excel_compose.write_to_excel(report_excel_dict, variables.sending_report_file_name)
         await self.send_file(message, file_path)
 
-    # async def update_message(self, message) -> None:
-    #     if not self.Crypto_Bot.message:
-    #         self.Crypto_Bot.message = message
-
     async def insert(self, message, **kwargs):
         data = await self.get_user_data(message, **kwargs)
         if insert_db(data):
@@ -183,7 +180,6 @@ class CryptoBotVer3:
         self.bot_methods = CryptoBotMethods(self)
         self.step = 1
         self.router = Router(name=__name__)
-        # self.message = None
         self.join_success = False
         print("https://t.me/crypto_simple_bot")
 
