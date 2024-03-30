@@ -1,4 +1,5 @@
 import asyncio
+import time
 from typing import Any
 from _apps.crypto_bot.db.db_methods import create_table_users, insert_db, update_db, select_from, check_table_exists
 from aiogram import types, Router
@@ -115,8 +116,11 @@ class CryptoBotMethods:
     async def accept_join_request(self, request):
         print(f"Join request, waiting {variables.time_for_accept_join}")
         await asyncio.sleep(variables.time_for_accept_join)
+        # time.sleep(variables.time_for_accept_join)
 
+        # if not await self.is_subscribed():
         if await self.Crypto_Bot.bot.approve_chat_join_request(user_id=request.from_user.id, chat_id=request.chat.id):
+            print("CONGRATS "*30)
             await self.Crypto_Bot.bot.send_message(request.from_user.id, variables.join_message)
             return True
         return False
