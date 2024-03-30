@@ -5,7 +5,7 @@ from _apps.crypto_bot.db.db_methods import create_table_users, insert_db, update
 from aiogram import types, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import FSInputFile, InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest, BotCommand, \
-    BotCommandScopeDefault, Message
+    BotCommandScopeDefault
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from _apps.crypto_bot import variables
 from _apps.excel_report import excel_compose
@@ -165,8 +165,6 @@ class CryptoBotMethods:
         if not check_table_exists():
             create_table_users()
 
-        # message = await self.get_message(message=request)
-        # a = 5
         await self.insert(message=request)
         if request.invite_link.name:
             print("Invite LINK name: ", request.invite_link.name)
@@ -177,10 +175,6 @@ class CryptoBotMethods:
         if not await self.is_subscribed(user_id=request.user_chat_id):
             if await self.accept_join_request(request):
                 await self.update_join_status(request)
-
-    async def get_message(self, from_user):
-        message = types.Message(from_user=from_user, text="")
-        return message
 
 class CryptoBotVer3:
     def __init__(self, bot, dp):
