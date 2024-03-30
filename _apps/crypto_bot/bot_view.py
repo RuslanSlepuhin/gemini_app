@@ -112,7 +112,13 @@ class CryptoBot:
         self.bot_methods = CryptoBotMethods(self)
         self.step = 1
         self.router = Router(name=__name__)
-        print("https://t.me/crypto_simple_bot")
+        # bot_info = asyncio.run(self.get_bot_name())
+        # print(f"https://t.me/{bot_info}")
+        pass
+
+    async def get_bot_name(self):
+        bot_name = await self.bot.get_me()
+        return bot_name.username
 
     async def handlers(self):
         @self.dp.message(CommandStart())
