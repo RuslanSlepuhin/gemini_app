@@ -11,6 +11,7 @@ from _apps.crypto_bot import variables
 from _apps.excel_report import excel_compose
 from _apps.crypto_bot.help_command import owner_help
 from _apps.crypto_bot.set_commands_bot import commands
+from datetime import datetime
 
 class CryptoBotMethods:
     def __init__(self, Crypto_Bot):
@@ -22,7 +23,7 @@ class CryptoBotMethods:
             user_id = kwargs['user_id']
         else:
             return False
-        print('\nIS_SUBSCRIBER: ', user_id, '\n')
+        await self.set_log('\nIS_SUBSCRIBER: ', str(user_id))
 
         try:
             chat_member = await self.Crypto_Bot.bot.get_chat_member(
@@ -30,11 +31,13 @@ class CryptoBotMethods:
                 user_id=user_id
             )
             if chat_member.status in ["member", "creator"]:
+                await self.set_log('\nIS_SUBSCRIBER: ', str(user_id), 'YES', '\n')
                 return True
             else:
+                await self.set_log('\nIS_SUBSCRIBER: ', str(user_id), 'NO', '\n')
                 return False
         except Exception as ex:
-            print("IS SUBSCRIBER: ", ex)
+            await self.set_log("IS SUBSCRIBER ERROR: ", str(ex))
             return False
 
     async def take_dialog(self, message):
@@ -45,12 +48,12 @@ class CryptoBotMethods:
             else:
                 if step < 2:
                     await self.Crypto_Bot.bot.send_message(message.chat.id, variables.you_are_subscribed)
-                print('break')
+                await self.set_log('break')
                 break
 
     async def public_content(self, message, content):
         markup = None
-        print("CONTENT GO TO ", message.from_user.id)
+        await self.set_log("CONTENT GO TO ", str(message.from_user.id))
         for key in content:
             match key:
                 case "video_notes":
@@ -85,7 +88,7 @@ class CryptoBotMethods:
                             await self.Crypto_Bot.bot.send_message(message.chat.id, text, disable_web_page_preview=True)
                 case 'timer':
                     if content['timer']:
-                        print('sleep content[timer]', content['timer'])
+                        await self.set_log('sleep content[timer]', str(content['timer']))
                         await asyncio.sleep(content['timer'] * self.min_per_hour)
 
     async def get_markdown(self, button_text, callback_url):
@@ -114,27 +117,27 @@ class CryptoBotMethods:
                 if key in variables.fields_user_table:
                     data[key] = kwargs[key]
                 else:
-                    print(f"key {key} is invalid")
+                    await self.set_log(f"key {key} is invalid")
         return data
 
     async def accept_join_request(self, request):
-        print(f"Join request {request.from_user.id}, waiting {variables.time_for_accept_join}")
+        await self.set_log(f"Join request {request.from_user.id}, waiting {variables.time_for_accept_join}")
         await asyncio.sleep(variables.time_for_accept_join)
         if await self.Crypto_Bot.bot.approve_chat_join_request(user_id=request.from_user.id, chat_id=request.chat.id):
-            print("CONGRATS ")
+            await self.set_log("CONGRATS ")
             await self.Crypto_Bot.bot.send_message(request.from_user.id, variables.join_message)
             return True
         return False
 
     async def update_join_status(self, request) -> Any:
-        print("user has been updated") if update_db(data={'follower_crypto_ch': True}, table=variables.user_table_name, telegram_id=request.from_user.id) else print('user has been NOT updated')
+        await self.set_log("user has been updated") if update_db(data={'follower_crypto_ch': True}, table=variables.user_table_name, telegram_id=request.from_user.id) else await self.set_log('user has been NOT updated')
 
     async def update_data(self, data, telegram_id) -> bool:
         try:
             update_db(data=data, table=variables.user_table_name, telegram_id=telegram_id)
             return True
         except Exception as ex:
-            print("update_join_status: ", ex)
+            await self.set_log("update_join_status: ", str(ex))
             return False
 
     async def send_file(self, message, file_path, caption=variables.caption_send_file):
@@ -150,10 +153,10 @@ class CryptoBotMethods:
     async def insert(self, message, **kwargs):
         data = await self.get_user_data(message, **kwargs)
         if insert_db(data):
-            print(f"user {message.from_user.id} has been written")
+            await self.set_log(f"user {message.from_user.id} has been written")
             return True
         else:
-            print(f"user {message.from_user.id} has NOT been written")
+            await self.set_log(f"user {message.from_user.id} has NOT been written")
             return False
 
     async def chat_join_request(self, request):
@@ -162,14 +165,19 @@ class CryptoBotMethods:
 
         await self.insert(message=request)
         if request.invite_link.name:
-            print("Invite LINK name: ", request.invite_link.name)
+            await self.set_log(f"Invite LINK name: ", str(request.invite_link.name))
             try:
                 await self.update_data(data={'utm_chat': request.invite_link.name}, telegram_id=request.from_user.id)
             except Exception as ex:
-                print("INSERT", ex)
+                await self.set_log("INSERT", str(ex))
         if not await self.is_subscribed(user_id=request.user_chat_id):
             if await self.accept_join_request(request):
                 await self.update_join_status(request)
+
+    async def set_log(self, *args) -> Any:
+        with open(variables.logs_path, 'a') as file:
+            file.write(", ".join(args) + '\n')
+        print(", ".join(args))
 
 class CryptoBotVer3:
     def __init__(self, bot, dp):
@@ -185,30 +193,33 @@ class CryptoBotVer3:
         await self.bot.set_my_commands(commands=commands, scope=BotCommandScopeDefault())
 
     async def handlers(self):
-
+        await self.bot_methods.set_log(f"\n------------- {datetime.now().strftime('%Y-%M-%d %h:%m')} ----------------")
         await self.set_commands()
 
         @self.dp.message(Command("users"))
         async def users(message: types.Message):
-            # await self.bot_methods.update_message(message)
             await self.bot_methods.prepare_users_report(message)
 
         @self.dp.message(Command("description"))
         async def description(message: types.Message):
             await self.bot.send_message(message.chat.id, owner_help)
 
+        @self.dp.message(Command("logs"))
+        async def users(message: types.Message):
+            await self.bot_methods.send_file(message, file_path=variables.logs_path)
+
         @self.dp.message(CommandStart())
         async def start(message: types.Message):
-            print("USER STARTED: ", message.chat.id)
+            await self.bot_methods.set_log("USER STARTED: ", str(message.chat.id))
             # await self.bot_methods.update_message(message)
             utm_bot = "-"
             try:
                 utm_bot = message.text.split(' ')[1] if message.text else None
             except Exception as ex:
-                print("utm_bot: ", ex)
+                await self.bot_methods.set_log("utm_bot: ", str(ex))
             create_table_users()
             data = await self.bot_methods.get_user_data(message, utm_bot=utm_bot)
-            print(f"USER {message.from_user.id} has been written") if insert_db(data) else print(f"USER {message.from_user.id} has NOT been written")
+            await self.bot_methods.set_log(f"USER {message.from_user.id} has been written") if insert_db(data) else await self.bot_methods.set_log(f"USER {message.from_user.id} has NOT been written")
             await self.bot_methods.take_dialog(message)
 
         @self.dp.chat_join_request()

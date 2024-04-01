@@ -3,6 +3,7 @@ crypto_channel_id = -1001991683246 #Ferrari
 
 you_are_subscribed = "You are already subscribed to the channel"
 db_path = "./_apps/crypto_bot/db/crypto_users.sqlite3"
+logs_path = "./_apps/crypto_bot/logs/logs.txt"
 
 config_path = "./_apps/crypto_bot/settings/config.ini"
 # invite_link = "https://t.me/+ZXRWq4EF6pQxMDMy"
