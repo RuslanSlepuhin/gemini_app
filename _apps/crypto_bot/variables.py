@@ -20,7 +20,7 @@ join_message = f"Congratulations🎉\n" \
                f"✅ To get an access to my profitable ROBOT\n" \
                f"just text me right now 👉{invite_links['mainbot']} 'ROBOT'"
 
-text_step1 = f"To get an access to my ROBOT with an average monthly income of 25%, subscribe to my FREE Telegram channel: {invite_links['mainbot']}🤑\n\nJust click the button below: ⬇️⬇️⬇️"
+text_step1 = f"To get an access to my ROBOT with an average monthly income of 25%, subscribe to my FREE Telegram channel: {invite_links['mainbot']} 🤑\n\nJust click the button below: ⬇️⬇️⬇️"
 text_step2 = f"💵 THAT'S MY LIFE 💵\n\n" \
              f"While I Chill And Have Fun - FerrariBot Makes Me Money 24/7 📈 Thanks Ferrari bot for my incredible routine.\n\n" \
              f"▶️Do you want to change your life for the better? 🙋‍♀️🙋🙋‍♂️\n\n" \
