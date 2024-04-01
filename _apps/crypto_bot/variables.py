@@ -7,7 +7,7 @@ config_path = "./_apps/crypto_bot/settings/config.ini"
 invite_link = "https://t.me/+BODz1bR09AJlMjIy"
 invite_links = {
     "main": "https://t.me/Message_Ferrari",
-    "mainbot": "https://t.me/Juliaferraribot?start=mainbot",
+    "mainbot": "https://t.me/+LX06iCLZh-NjNWJi",
 }
 media_path = "./_apps/crypto_bot/media/"
 time_for_accept_join = 15
@@ -16,7 +16,7 @@ join_message = f"Congratulations🎉\n" \
                f"You got an free access to my\n" \
                f"FOREX TG COMMUNITY🔥\n\n" \
                f"✅ To get an access to my profitable ROBOT\n" \
-               f"just text me right now 👉{invite_links['main']} 'ROBOT'"
+               f"just text me right now 👉{invite_links['mainbot']} 'ROBOT'"
 
 text_step1 = f"To get an access to my ROBOT with an average monthly income of 25%, subscribe to my FREE Telegram channel: {invite_links['mainbot']}🤑\n\nJust click the button below: ⬇️⬇️⬇️"
 text_step2 = f"💵 THAT'S MY LIFE 💵\n\n" \
