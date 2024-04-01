@@ -10,11 +10,12 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from _apps.crypto_bot import variables
 from _apps.excel_report import excel_compose
 from _apps.crypto_bot.help_command import owner_help
+from _apps.crypto_bot.set_commands_bot import commands
 
 class CryptoBotMethods:
     def __init__(self, Crypto_Bot):
         self.Crypto_Bot = Crypto_Bot
-        self.min_per_hour = 2
+        self.min_per_hour = variables.min_per_hour
 
     async def is_subscribed(self, chat_id=variables.crypto_channel_id, **kwargs) -> bool:
         if kwargs.get('user_id') and kwargs['user_id']:
@@ -119,9 +120,6 @@ class CryptoBotMethods:
     async def accept_join_request(self, request):
         print(f"Join request {request.from_user.id}, waiting {variables.time_for_accept_join}")
         await asyncio.sleep(variables.time_for_accept_join)
-        # time.sleep(variables.time_for_accept_join)
-
-        # if not await self.is_subscribed():
         if await self.Crypto_Bot.bot.approve_chat_join_request(user_id=request.from_user.id, chat_id=request.chat.id):
             print("CONGRATS ")
             await self.Crypto_Bot.bot.send_message(request.from_user.id, variables.join_message)
@@ -181,19 +179,9 @@ class CryptoBotVer3:
         self.step = 1
         self.router = Router(name=__name__)
         self.join_success = False
-        print("https://t.me/crypto_simple_bot")
+        print("https://t.me/Ferrari_forex_bot")
 
     async def set_commands(self):
-        commands = [
-            BotCommand(
-                command="users",
-                description="add bot, usage '/users'",
-            ),
-            BotCommand(
-                command="description",
-                description="add bot, usage '/description'",
-            ),
-        ]
         await self.bot.set_my_commands(commands=commands, scope=BotCommandScopeDefault())
 
     async def handlers(self):
