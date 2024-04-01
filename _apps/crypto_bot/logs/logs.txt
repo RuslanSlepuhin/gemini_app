@@ -1,0 +1,31 @@
+USER STARTED: , 1763672666
+utm_bot: , list index out of range
+
+IS_SUBSCRIBER: , 1763672666, 
+
+USER 1763672666 has NOT been written
+
+IS_SUBSCRIBER: , 1763672666, 
+
+CONTENT GO TO , 1763672666
+sleep content[timer], 5
+USER STARTED: , 1763672666
+utm_bot: , list index out of range
+
+IS_SUBSCRIBER: , 1763672666, 
+
+
+IS_SUBSCRIBER: , 1763672666, NO, 
+
+USER 1763672666 has NOT been written
+
+IS_SUBSCRIBER: , 1763672666, 
+
+
+IS_SUBSCRIBER: , 1763672666, NO, 
+
+CONTENT GO TO , 1763672666
+sleep content[timer], 5
+------------- 2024-08-01 Apr:04 ----------------
+
+------------- 2024-08-01 Apr:04 ----------------
