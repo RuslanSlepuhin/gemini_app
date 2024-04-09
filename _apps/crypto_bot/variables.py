@@ -118,3 +118,4 @@ fields_user_table = ["id", "telegram_id", "username", "first_name", "last_name",
 get_users_from_db_query = f"SELECT * FROM {user_table_name}"
 caption_send_file = "Report"
 sending_report_file_name = "./_apps/crypto_bot/reports/report.xlsx"
+admin_id = 758905227
