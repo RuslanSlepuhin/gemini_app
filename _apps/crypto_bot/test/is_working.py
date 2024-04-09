@@ -18,11 +18,13 @@ class IsWorking:
             if not self.msg:
                 self.text = message + "\n" +  datetime.now().strftime("%d-%m_%y %H:%M")
                 self.msg = await self.main_class.bot.send_message(chat_id, self.text, disable_notification=True)
+                print(self.text)
                 await asyncio.sleep(frequency)
             elif len(self.text + datetime.now().strftime("%d-%m_%y %H:%M")) > 4096:
                     self.msg = None
             else:
                 self.text += f"\n{datetime.now().strftime('%d-%m_%y %H:%M')}"
                 await self.msg.edit_text(self.text)
+                print(message + '\n' + datetime.now().strftime("%d-%m_%y %H:%M"))
                 await asyncio.sleep(frequency)
 
