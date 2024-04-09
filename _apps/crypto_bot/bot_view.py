@@ -13,6 +13,7 @@ from _apps.crypto_bot.help_command import owner_help
 from _apps.crypto_bot.set_commands_bot import commands
 from datetime import datetime
 from _apps.crypto_bot.variables import admin_id
+from _apps.crypto_bot.test.is_working import IsWorking
 
 class CryptoBotMethods:
     def __init__(self, Crypto_Bot):
@@ -198,6 +199,8 @@ class CryptoBotVer3:
         await self.bot.set_my_commands(commands=commands, scope=BotCommandScopeDefault())
 
     async def handlers(self):
+        asyncio.create_task(IsWorking(self).send_message_schedule())
+
         await self.bot_methods.set_log(f"\n------------- {datetime.now().strftime('%Y-%M-%d %h:%m')} ----------------")
         await self.set_commands()
 
