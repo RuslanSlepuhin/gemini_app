@@ -2,11 +2,6 @@ import asyncio
 from datetime import datetime
 from _apps.crypto_bot.variables import admin_id
 
-text_text = "fsdafaaaaaaaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff dssssssssssssssssssssssssssssssss" \
-            " ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaa" \
-            "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffsssssssssssssss ss" \
-            "sdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddfffffffffffffffffffffsssssssssss dddddddd"
-
 class IsWorking:
     def __init__(self, main_class):
         self.main_class = main_class
