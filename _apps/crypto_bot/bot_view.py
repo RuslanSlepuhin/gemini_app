@@ -176,6 +176,8 @@ class CryptoBotMethods:
         if not await self.is_subscribed(user_id=request.user_chat_id):
             if await self.accept_join_request(request):
                 await self.update_join_status(request)
+                await self.Crypto_Bot.bot.send_message(int(admin_id), f"!!! the user {request.from_user.id} just subscribed to the channel")
+
 
     async def set_log(self, *args) -> Any:
         with open(variables.logs_path, 'a') as file:
