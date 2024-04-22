@@ -50,12 +50,12 @@ class CryptoBotMethods:
 
         for step in range(1, len(variables.media_way)+1):
             if not await self.is_subscribed(user_id=message.chat.id):
-                await self.Crypto_Bot.bot.send_message(int(admin_id), f"the user {user_data} pressed start. Not subscribed to the channel")
+                await self.Crypto_Bot.bot.send_message(int(admin_id), f"the user\n{user_data}\npressed start. Not subscribed to the channel")
                 content = variables.media_way[step]
                 await self.public_content(message, content)
             else:
                 if step < 2:
-                    await self.Crypto_Bot.bot.send_message(int(admin_id), f"the user {user_data} pressed start. Subscribed to the channel")
+                    await self.Crypto_Bot.bot.send_message(int(admin_id), f"the user\n{user_data}\npressed start. Subscribed to the channel")
                     await self.Crypto_Bot.bot.send_message(message.chat.id, variables.you_are_subscribed)
                 await self.set_log('break')
                 break
