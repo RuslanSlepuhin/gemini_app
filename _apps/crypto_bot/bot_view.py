@@ -43,14 +43,19 @@ class CryptoBotMethods:
             return False
 
     async def take_dialog(self, message):
+        user_data = f"User id: {message.chat.id}\n" \
+                    f"Username: {message.from_user.username}\n" \
+                    f"First name: {message.from_user.first_name}\n" \
+                    f"Last name: {message.from_user.last_name}\n"
+
         for step in range(1, len(variables.media_way)+1):
             if not await self.is_subscribed(user_id=message.chat.id):
-                await self.Crypto_Bot.bot.send_message(int(admin_id), f"the user {message.chat.id} pressed start. Not subscribed to the channel")
+                await self.Crypto_Bot.bot.send_message(int(admin_id), f"the user {user_data} pressed start. Not subscribed to the channel")
                 content = variables.media_way[step]
                 await self.public_content(message, content)
             else:
                 if step < 2:
-                    await self.Crypto_Bot.bot.send_message(int(admin_id), f"the user {message.chat.id} pressed start. Subscribed to the channel")
+                    await self.Crypto_Bot.bot.send_message(int(admin_id), f"the user {user_data} pressed start. Subscribed to the channel")
                     await self.Crypto_Bot.bot.send_message(message.chat.id, variables.you_are_subscribed)
                 await self.set_log('break')
                 break
