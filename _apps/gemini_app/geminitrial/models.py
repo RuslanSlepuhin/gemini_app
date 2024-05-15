@@ -15,7 +15,8 @@ safety_settings=[
 ]
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.0-pro",
+    # model_name="gemini-1.0-pro",
+    model_name="gemini-pro",
     safety_settings=safety_settings
 )
 
