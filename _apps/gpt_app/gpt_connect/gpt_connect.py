@@ -6,6 +6,13 @@ load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
 openai.api_key = openai_api_key
 
+
+def available_models():
+    models = openai.Model.list()
+    for model in models['data']:
+        print(model['id'])
+
+
 def get_gpt4_response(prompt, model="gpt-4", temperature=0.7, max_tokens=150):
     print("!! PROMPT: ", prompt)
     response = openai.Completion.create(
@@ -20,6 +27,4 @@ def get_gpt4_response(prompt, model="gpt-4", temperature=0.7, max_tokens=150):
     return response.choices[0].text.strip()
 
 if __name__ == "__main__":
-    prompt = "Расскажи мне интересный факт о космосе."
-    response = get_gpt4_response(prompt)
-    print(response)
+    available_models()
