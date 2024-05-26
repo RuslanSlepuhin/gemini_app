@@ -13,7 +13,7 @@ def available_models():
         print(model['id'])
 
 
-def get_gpt4_response(prompt, model="davinci-002", temperature=0.7, max_tokens=150):
+def get_gpt4_response(prompt, model="davinci-002",  temperature=0.7, max_tokens=150):
     print("!! PROMPT: ", prompt)
     response = openai.Completion.create(
         model=model,
