@@ -14,18 +14,22 @@ def available_models():
     return models['data']
 
 
-def get_gpt4_response(prompt, model="davinci-002",  temperature=0.7, max_tokens=150):
+def get_gpt4_response(prompt, model="gpt-4-turbo", temperature=0.7, max_tokens=150):
     print("!! PROMPT: ", prompt)
-    response = openai.Completion.create(
+    response = openai.ChatCompletion.create(
         model=model,
-        prompt=prompt,
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
         temperature=temperature,
         max_tokens=max_tokens,
         n=1,
         stop=None,
         timeout=15,
     )
-    return response.choices[0].text.strip()
+    return response.choices[0].message['content'].strip()
+
 
 if __name__ == "__main__":
     available_models()
