@@ -14,7 +14,7 @@ def available_models():
     return models['data']
 
 
-def get_gpt4_response(prompt, model="gpt-4-turbo", temperature=0.7, max_tokens=150):
+def get_gpt4_response(prompt, model="gpt-4o", temperature=0.7, max_tokens=150):
     print("!! PROMPT: ", prompt)
     response = openai.ChatCompletion.create(
         model=model,
