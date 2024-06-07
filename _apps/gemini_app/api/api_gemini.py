@@ -17,7 +17,8 @@ async def gemini_request():
 @app.route("/gpt_request", methods=["POST"])
 async def gpt_request():
     question = request.json['request']
-    answer = get_gpt4_response(question)
+    tokens = request.json['tokens']
+    answer = get_gpt4_response(question, max_tokens=tokens)
     return jsonify({'answer': answer})
 
 app.run(host="127.0.0.1", port=int(os.environ.get('PORT', 5000)))
