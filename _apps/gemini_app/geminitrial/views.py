@@ -3,6 +3,8 @@ from _apps.gemini_app.geminitrial.models import model
 
 async def gemini_ai(prompt):
     prompt = prompt
-    response = model.generate_content(contents=[prompt])
-    print(f"\033[1;33m{response}\033[0m")
-    return response.text
+    try:
+        response = model.generate_content(contents=[prompt])
+        return response.text
+    except Exception as ex:
+        print(f"\033[1;33m{ex}\033[0m")
