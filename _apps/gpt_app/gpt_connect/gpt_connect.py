@@ -14,9 +14,7 @@ def available_models():
     return models['data']
 
 
-# def get_gpt4_response(prompt, model="gpt-o1-preview", temperature=0.7, max_tokens=150, **kwargs):
-
-def get_gpt4_response(prompt, model="o1-mini", temperature=0.7, max_tokens=150, **kwargs):
+def get_gpt4_response(prompt, model="gpt-4o", temperature=0.7, max_tokens=150, **kwargs):
     role_system_content = "You are a helpful assistant." if not kwargs.get('role_system_content') else kwargs['role_system_content']
     print("!! PROMPT: ", prompt)
     response = openai.ChatCompletion.create(
