@@ -22,7 +22,7 @@ async def gpt_request():
     return jsonify({'answer': answer})
 
 @app.route("/gpt_request_updated", methods=["POST"])
-async def gpt_request():
+async def gpt_request_updated():
     question = request.json['request']
     tokens = request.json['tokens']
     answer = get_gpt4_response_updated(question, max_tokens=tokens)
