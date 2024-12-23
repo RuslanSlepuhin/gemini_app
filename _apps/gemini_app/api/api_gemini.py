@@ -3,7 +3,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from flask import request
 from _apps.gemini_app.geminitrial.views import gemini_ai
-from _apps.gpt_app.gpt_connect.gpt_connect import get_gpt4_response
+from _apps.gpt_app.gpt_connect.gpt_connect import get_gpt4_response, get_gpt4_response_updated
 
 app = Flask(__name__)
 CORS(app)
@@ -20,5 +20,13 @@ async def gpt_request():
     tokens = request.json['tokens']
     answer = get_gpt4_response(question, max_tokens=tokens)
     return jsonify({'answer': answer})
+
+@app.route("/gpt_request_updated", methods=["POST"])
+async def gpt_request():
+    question = request.json['request']
+    tokens = request.json['tokens']
+    answer = get_gpt4_response_updated(question, max_tokens=tokens)
+    return jsonify({'answer': answer})
+
 
 app.run(host="127.0.0.1", port=int(os.environ.get('PORT', 5000)))
